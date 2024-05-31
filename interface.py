@@ -57,7 +57,7 @@ def openExpenses():
     selectedPayMethod = tk.StringVar()
     bankButton = tk.Radiobutton(payMethodFrame, text='Bank', variable=selectedPayMethod, value='Bank')
     bankButton.grid(row=0, column=0, padx=10, pady=10, sticky='W')
-    cashBoxButton = tk.Radiobutton(payMethodFrame, text='Cash Box', variable=selectedPayMethod, value='Cash Box')
+    cashBoxButton = tk.Radiobutton(payMethodFrame, text='Cash', variable=selectedPayMethod, value='Cash')
     cashBoxButton.grid(row=0, column=1, padx=10, pady=10, sticky='W')
 
     # Creating Bank Account frame
@@ -97,6 +97,13 @@ def openExpenses():
     accountNumberEntry = tk.Entry(bankAccountFrame, width=20, borderwidth=3)
     accountNumberEntry.grid(row=1, column=3, padx=10, pady=10, sticky='W')
 
+    # Creating description entry (text area)
+    description_label = tk.Label(top, text='Description')
+    description_label.grid(row=4, column=0, padx=10, pady=10, sticky='W')
+
+    description = tk.Text(top, width=50, height=5, borderwidth=3)
+    description.grid(row=4, column=1, columnspan=4, padx=10, pady=10, sticky='W')
+
     def getValues():
         global expense_type, amount, date_paid, payment_method
         expense_type = selectedExpenseType.get()
@@ -107,10 +114,13 @@ def openExpenses():
         account_type = selectedAccountType.get()
         branch_name = selectedBranchName.get()
         account_number = accountNumberEntry.get()
-        messagebox.showinfo("Info", f"Expense Type: {expense_type}\nCost: {amount}\nDate Paid: {date_paid}\nPayment Method: {payment_method}\nBank Name: {bank_name}\nAccount Type: {account_type}\nBranch Name: {branch_name}\nAccount Number: {account_number}")
+        description_text = description.get("1.0", tk.END).strip()  # Retrieve text from the Text widget
+        messagebox.showinfo("Info",
+                            f"Expense Type: {expense_type}\nCost: {amount}\nDate Paid: {date_paid}\nPayment Method: {payment_method}\nBank Name: {bank_name}\nAccount Type: {account_type}\nBranch Name: {branch_name}\nAccount Number: {account_number}\nDescription: {description_text}")
 
+    # Creating the submit button
     submitButton = tk.Button(top, text="Submit", command=getValues)
-    submitButton.grid(row=4, column=0, columnspan=4, pady=10)
+    submitButton.grid(row=5, column=0, columnspan=4, pady=10)
 
 expensesButton = tk.Button(root, text='Expenses', command=openExpenses)
 expensesButton.pack(padx=10, pady=10)
