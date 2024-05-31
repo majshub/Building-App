@@ -5,6 +5,31 @@ root = tk.Tk()
 root.title('Building App')
 
 def openExpenses():
+
+    def clearFields():
+        # Clearing expense type
+        selectedExpenseType.set(ExpenseTypes[0])
+
+        # Clearing cost
+        cost.delete(0, tk.END)
+
+        # Clearing date fields
+        day.set(days[0])
+        month.set(months[0])
+        year.set(years[0])
+
+        # Clearing payment method
+        selectedPayMethod.set('')
+
+        # Clearing bank account fields
+        selectedBankName.set(bankNames[0])
+        selectedAccountType.set(accountTypes[0])
+        selectedBranchName.set(branchNames[0])
+        accountNumberEntry.delete(0, tk.END)
+
+        # Clearing description
+        description.delete('1.0', tk.END)
+
     top = tk.Toplevel()
     top.title('Expenses Page')
 
@@ -120,7 +145,19 @@ def openExpenses():
 
     # Creating the submit button
     submitButton = tk.Button(top, text="Submit", command=getValues)
-    submitButton.grid(row=5, column=0, columnspan=4, pady=10)
+    submitButton.grid(row=5, column=0, columnspan=4, pady=10, sticky='W')
+
+    # creating c;ear button
+    clearButton = tk.Button(top, text='Clear', command=clearFields)
+    clearButton.grid(row=5, column=1, columnspan=4, pady=10, sticky='W')
+
+    # creating delete button
+    deleteButton = tk.Button(top, text="Delete")
+    deleteButton.grid(row=5, column=2, columnspan=4, pady=10, sticky='W')
+
+    # creating update button
+    updateButton = tk.Button(top, text="Update")
+    updateButton.grid(row=5, column=3, columnspan=4, pady=10, sticky='W')
 
 expensesButton = tk.Button(root, text='Expenses', command=openExpenses)
 expensesButton.pack(padx=10, pady=10)
