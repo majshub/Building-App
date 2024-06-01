@@ -73,17 +73,19 @@ def openExpenses():
             transaction_description = description.get("1.0", tk.END)
 
             with connection.cursor() as cursor:
+                # Check and handle transaction based on payment method before inserting into Expenses table
+                if withdraw_place == 'Bank':
+                    if not handle_bank_transaction(cursor, transaction_date, amount, transaction_description, bank_branch_name, account_number):
+                        return
+                elif withdraw_place == 'Cash Box':
+                    if not handle_cashbox_transaction(cursor, transaction_date, amount, transaction_description):
+                        return
+
                 # Insert into Expenses table
                 cursor.execute(
                     "INSERT INTO Expenses (expense_type, amount, date_paid, withdraw_place, bank_branch_name, account_number) VALUES (%s, %s, %s, %s, %s, %s)",
                     (expense_type, amount, date_paid, withdraw_place, bank_branch_name, account_number)
                 )
-
-                # Insert into corresponding transaction table based on payment method
-                if withdraw_place == 'Bank':
-                    handle_bank_transaction(cursor, transaction_date, amount, transaction_description, bank_branch_name, account_number)
-                elif withdraw_place == 'Cash Box':
-                    handle_cashbox_transaction(cursor, transaction_date, amount, transaction_description)
 
             connection.commit()
             messagebox.showinfo("Success", "Information registered successfully.")
@@ -104,7 +106,7 @@ def openExpenses():
             account_id, balance = account
             if balance < amount:
                 messagebox.showerror("Error", "Insufficient balance.")
-                return
+                return False
             # Insert into BankTransactions table
             cursor.execute(
                 "INSERT INTO BankTransactions (account_id, transaction_date, amount, description, transaction_type) VALUES (%s, %s, %s, %s, %s)",
@@ -115,8 +117,10 @@ def openExpenses():
                 "UPDATE BankAccounts SET balance = balance - %s WHERE account_id = %s",
                 (amount, account_id)
             )
+            return True
         else:
             messagebox.showerror("Error", "Bank account not found.")
+            return False
 
     def handle_cashbox_transaction(cursor, transaction_date, amount, description):
         # Fetch the current balance from the CashBox table
@@ -126,7 +130,7 @@ def openExpenses():
             current_balance = cashbox_balance[0]
             if current_balance < amount:
                 messagebox.showerror("Error", "Insufficient balance in Cash Box.")
-                return
+                return False
             # Insert into CashBoxTransactions table
             cursor.execute(
                 "INSERT INTO CashBoxTransactions (transaction_date, amount, description, transaction_type) VALUES (%s, %s, %s, %s)",
@@ -137,8 +141,10 @@ def openExpenses():
                 "UPDATE CashBox SET balance = balance - %s",
                 (amount,)
             )
+            return True
         else:
             messagebox.showerror("Error", "Cash Box balance not found.")
+            return False
 
     top = tk.Toplevel()
     top.title('Expenses Page')
