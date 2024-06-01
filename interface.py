@@ -96,14 +96,24 @@ def openExpenses():
     def handle_bank_transaction(cursor, transaction_date, amount, description, bank_branch_name, account_number):
         # Find the account_id based on bank details
         cursor.execute(
-            "SELECT account_id FROM BankAccounts WHERE bank_name = %s AND branch_name = %s AND account_number = %s",
+            "SELECT account_id, balance FROM BankAccounts WHERE bank_name = %s AND branch_name = %s AND account_number = %s",
             (selectedBankName.get(), bank_branch_name, account_number)
         )
-        account_id = cursor.fetchone()
-        if account_id:
+        account = cursor.fetchone()
+        if account:
+            account_id, balance = account
+            if balance < amount:
+                messagebox.showerror("Error", "Insufficient balance.")
+                return
+            # Insert into BankTransactions table
             cursor.execute(
                 "INSERT INTO BankTransactions (account_id, transaction_date, amount, description, transaction_type) VALUES (%s, %s, %s, %s, %s)",
-                (account_id[0], transaction_date, amount, description, 'Withdrawal')
+                (account_id, transaction_date, amount, description, 'Withdrawal')
+            )
+            # Update BankAccounts balance
+            cursor.execute(
+                "UPDATE BankAccounts SET balance = balance - %s WHERE account_id = %s",
+                (amount, account_id)
             )
         else:
             messagebox.showerror("Error", "Bank account not found.")
