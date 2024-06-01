@@ -119,16 +119,26 @@ def openExpenses():
             messagebox.showerror("Error", "Bank account not found.")
 
     def handle_cashbox_transaction(cursor, transaction_date, amount, description):
-        # Insert into CashBoxTransactions table
-        cursor.execute(
-            "INSERT INTO CashBoxTransactions (transaction_date, amount, description, transaction_type) VALUES (%s, %s, %s, %s)",
-            (transaction_date, amount, description, 'Withdrawal')
-        )
-        # Update CashBox balance
-        cursor.execute(
-            "UPDATE CashBox SET balance = balance - %s",
-            (amount,)
-        )
+        # Fetch the current balance from the CashBox table
+        cursor.execute("SELECT balance FROM CashBox")
+        cashbox_balance = cursor.fetchone()
+        if cashbox_balance:
+            current_balance = cashbox_balance[0]
+            if current_balance < amount:
+                messagebox.showerror("Error", "Insufficient balance in Cash Box.")
+                return
+            # Insert into CashBoxTransactions table
+            cursor.execute(
+                "INSERT INTO CashBoxTransactions (transaction_date, amount, description, transaction_type) VALUES (%s, %s, %s, %s)",
+                (transaction_date, amount, description, 'Withdrawal')
+            )
+            # Update CashBox balance
+            cursor.execute(
+                "UPDATE CashBox SET balance = balance - %s",
+                (amount,)
+            )
+        else:
+            messagebox.showerror("Error", "Cash Box balance not found.")
 
     top = tk.Toplevel()
     top.title('Expenses Page')
