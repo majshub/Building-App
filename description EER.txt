@@ -1,0 +1,240 @@
+To design an EER (Enhanced Entity-Relationship) diagram based on the provided database schema, we'll start by identifying the entities, their attributes, primary keys, and relationships. Here's a summary of the entities and their primary keys:
+
+1. **Units**
+   - unit_id (Primary Key)
+   - unit_number
+   - owner_name
+   - owner_contact
+   - unit_contact
+
+2. **Employees**
+   - employee_id (Primary Key)
+   - name
+   - id_number
+   - birth_date
+   - gender
+   - marital_status
+   - children_count
+   - job_type
+   - hire_date
+   - work_experience
+   - salary
+   - benefits
+   - contract_text
+
+3. **Receipts**
+   - receipt_id (Primary Key)
+   - receipt_type
+   - amount
+   - date_received
+   - deposit_place
+   - bank_branch_name
+   - account_number
+   - unit_id (Foreign Key)
+
+4. **Expenses**
+   - expense_id (Primary Key)
+   - expense_type
+   - amount
+   - date_paid
+   - withdraw_place
+   - bank_branch_name
+   - account_number
+
+5. **Contractors**
+   - contractor_id (Primary Key)
+   - contract_type
+   - company_name
+   - contract_text
+   - start_date
+   - end_date
+   - advance_payment
+   - monthly_payment
+
+6. **Insurance**
+   - insurance_id (Primary Key)
+   - insurance_type
+   - contract_text
+   - start_date
+   - end_date
+   - advance_payment
+   - monthly_payment
+
+7. **BankAccounts**
+   - account_id (Primary Key)
+   - bank_name
+   - branch_name
+   - account_number
+   - account_type
+   - balance
+
+8. **BankTransactions**
+   - transaction_id (Primary Key)
+   - account_id (Foreign Key)
+   - transaction_date
+   - amount
+   - description
+   - transaction_type
+
+9. **CashBox**
+   - cashbox_id (Primary Key)
+   - balance
+
+10. **CashBoxTransactions**
+    - transaction_id (Primary Key)
+    - transaction_date
+    - amount
+    - description
+    - transaction_type
+
+Now, we'll define the relationships:
+- Each receipt is associated with a unit (foreign key `unit_id` in `Receipts`).
+- Each bank transaction is associated with a bank account (foreign key `account_id` in `BankTransactions`).
+
+Let's create the EER diagram:
+
+1. **Units Entity**:
+   - Attributes: unit_id, unit_number, owner_name, owner_contact, unit_contact
+   - Primary Key: unit_id
+
+2. **Employees Entity**:
+   - Attributes: employee_id, name, id_number, birth_date, gender, marital_status, children_count, job_type, hire_date, work_experience, salary, benefits, contract_text
+   - Primary Key: employee_id
+
+3. **Receipts Entity**:
+   - Attributes: receipt_id, receipt_type, amount, date_received, deposit_place, bank_branch_name, account_number, unit_id
+   - Primary Key: receipt_id
+   - Foreign Key: unit_id (References `Units`)
+
+4. **Expenses Entity**:
+   - Attributes: expense_id, expense_type, amount, date_paid, withdraw_place, bank_branch_name, account_number
+   - Primary Key: expense_id
+
+5. **Contractors Entity**:
+   - Attributes: contractor_id, contract_type, company_name, contract_text, start_date, end_date, advance_payment, monthly_payment
+   - Primary Key: contractor_id
+
+6. **Insurance Entity**:
+   - Attributes: insurance_id, insurance_type, contract_text, start_date, end_date, advance_payment, monthly_payment
+   - Primary Key: insurance_id
+
+7. **BankAccounts Entity**:
+   - Attributes: account_id, bank_name, branch_name, account_number, account_type, balance
+   - Primary Key: account_id
+
+8. **BankTransactions Entity**:
+   - Attributes: transaction_id, account_id, transaction_date, amount, description, transaction_type
+   - Primary Key: transaction_id
+   - Foreign Key: account_id (References `BankAccounts`)
+
+9. **CashBox Entity**:
+   - Attributes: cashbox_id, balance
+   - Primary Key: cashbox_id
+
+10. **CashBoxTransactions Entity**:
+    - Attributes: transaction_id, transaction_date, amount, description, transaction_type
+    - Primary Key: transaction_id
+
+### EER Diagram Design Steps
+
+1. **Entities**:
+   - Draw rectangles for each entity: `Units`, `Employees`, `Receipts`, `Expenses`, `Contractors`, `Insurance`, `BankAccounts`, `BankTransactions`, `CashBox`, and `CashBoxTransactions`.
+
+2. **Attributes**:
+   - List the attributes inside each rectangle. Mark primary keys with "PK" and foreign keys with "FK".
+
+3. **Relationships**:
+   - Draw lines between related entities.
+   - Use crow's foot notation for the relationships, indicating one-to-many or many-to-one relationships.
+   - Label the foreign key relationships (`unit_id` in `Receipts`, `account_id` in `BankTransactions`).
+
+### Example of Relationships:
+
+- `Units` ⟶ `Receipts` (One-to-Many)
+  - A unit can have multiple receipts.
+  - Each receipt is linked to a specific unit.
+- `BankAccounts` ⟶ `BankTransactions` (One-to-Many)
+  - A bank account can have multiple transactions.
+  - Each transaction is linked to a specific bank account.
+
+### EER Diagram
+
+```plaintext
++---------------+         +-------------+
+|   Units       |1       ∞|  Receipts   |
++---------------+---------+-------------+
+|PK unit_id     |         |PK receipt_id|
+|unit_number    |         |receipt_type |
+|owner_name     |         |amount       |
+|owner_contact  |         |date_received|
+|unit_contact   |         |deposit_place|
++---------------+         |bank_branch  |
+                          |account_number|
+                          |FK unit_id    |
+                          +-------------+
++---------------+         +-------------+
+|  Employees    |         |  Expenses   |
++---------------+         +-------------+
+|PK employee_id |         |PK expense_id|
+|name           |         |expense_type |
+|id_number      |         |amount       |
+|birth_date     |         |date_paid    |
+|gender         |         |withdraw_place|
+|marital_status |         |bank_branch  |
+|children_count |         |account_number|
+|job_type       |         +-------------+
+|hire_date      |         
+|work_experience|
+|salary         |
+|benefits       |
+|contract_text  |
++---------------+         +-------------+
+                         ∞| Contractors |
+                         +-------------+
+                         |PK contractor_id|
+                         |contract_type|
+                         |company_name |
+                         |contract_text|
+                         |start_date   |
+                         |end_date     |
+                         |advance_payment|
+                         |monthly_payment|
+                         +-------------+
++---------------+         +-------------+
+|  Insurance    |         |BankAccounts |
++---------------+         +-------------+
+|PK insurance_id|1       ∞|PK account_id|
+|insurance_type |---------|bank_name    |
+|contract_text  |         |branch_name  |
+|start_date     |         |account_number|
+|end_date       |         |account_type |
+|advance_payment|         |balance      |
+|monthly_payment|
++---------------+         +-------------+
+                         ∞| BankTransactions |
+                         +-------------------+
+                         |PK transaction_id  |
+                         |FK account_id      |
+                         |transaction_date   |
+                         |amount             |
+                         |description        |
+                         |transaction_type   |
+                         +-------------------+
++---------------+         +-------------------+
+|   CashBox     |1       ∞|CashBoxTransactions|
++---------------+---------+-------------------+
+|PK cashbox_id  |         |PK transaction_id  |
+|balance        |         |transaction_date   |
++---------------+         |amount             |
+                          |description        |
+                          |transaction_type   |
+                          +-------------------+
+```
+
+### Notes
+- Each entity is represented by a rectangle.
+- Attributes are listed within the rectangle, with primary keys (PK) and foreign keys (FK) indicated.
+- Relationships are shown with lines, using crow's foot notation to indicate cardinality (1-to-many, many-to-1).
+- Foreign key relationships link `Receipts` to `Units` and `BankTransactions` to `BankAccounts`.
+
+This EER diagram provides a visual representation of the database schema, showcasing the entities, their attributes, primary keys, and relationships between them.
