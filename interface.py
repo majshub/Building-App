@@ -58,6 +58,19 @@ def openExpenses():
 
         # Clearing description
         description.delete('1.0', tk.END)
+        update_bank_fields_state()
+
+    def update_bank_fields_state():
+        if selectedPayMethod.get() == 'Bank':
+            bankNameDropList.config(state='normal')
+            accountTypeDropList.config(state='normal')
+            branchNameDropList.config(state='normal')
+            accountNumberDropList.config(state='normal')
+        else:
+            bankNameDropList.config(state='disabled')
+            accountTypeDropList.config(state='disabled')
+            branchNameDropList.config(state='disabled')
+            accountNumberDropList.config(state='disabled')
 
     def register_info():
         if not connection:
@@ -196,6 +209,7 @@ def openExpenses():
     payMethodFrame.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky='W')
 
     selectedPayMethod = tk.StringVar()
+    selectedPayMethod.trace('w', lambda *args: update_bank_fields_state())
     bankButton = tk.Radiobutton(payMethodFrame, text='Bank', variable=selectedPayMethod, value='Bank')
     bankButton.grid(row=0, column=0, padx=10, pady=10, sticky='W')
     cashBoxButton = tk.Radiobutton(payMethodFrame, text='Cash Box', variable=selectedPayMethod, value='Cash Box')
@@ -258,6 +272,8 @@ def openExpenses():
     # Close button
     closeButton = tk.Button(top, text='Close', command=top.destroy)
     closeButton.grid(row=5, column=2, padx=10, pady=10, sticky='W')
+
+    update_bank_fields_state()
 
 
 mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
