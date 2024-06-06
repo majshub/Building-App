@@ -427,19 +427,19 @@ def openContracts():
 
 
 mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
-mainLabel.pack(pady=20, padx=20)
+mainLabel.pack(pady=20, padx=100)
 
 openExpensesButton = tk.Button(root, text='Expenses', command=openExpenses)
-openExpensesButton.pack(pady=20, padx=20)
+openExpensesButton.pack(pady=20, padx=100)
 
 insuranceButton = tk.Button(root, text='Insurances', command=openInsurance)
-insuranceButton.pack(pady=10, padx=20)
+insuranceButton.pack(pady=10, padx=100)
 
 contractButton = tk.Button(root, text='Contracts', command=openContracts)
-contractButton.pack(pady=10, padx=20)
+contractButton.pack(pady=10, padx=100)
 
 
 closeButton = tk.Button(root, text='Close', command=root.quit)
-closeButton.pack(pady=20, padx=20)
+closeButton.pack(pady=20, padx=100)
 
 root.mainloop()
