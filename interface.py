@@ -160,6 +160,87 @@ def openExpenses():
             messagebox.showerror("Error", "Cash Box balance not found.")
             return False
 
+    def delete_info():
+        if not connection:
+            return
+        try:
+            expense_type = selectedExpenseType.get()
+            amount = float(cost.get())
+            date_paid = f"{year.get()}-{month.get()}-{day.get()}"
+            withdraw_place = selectedPayMethod.get()
+            bank_branch_name = selectedBranchName.get()
+            account_number = selectedAccountNumber.get()
+            transaction_date = date_paid  # Use the same date as the expense date for bank transactions
+            transaction_description = description.get("1.0", tk.END)
+
+            with connection.cursor() as cursor:
+                # Check and handle transaction based on payment method before deleting from Expenses table
+                if withdraw_place == 'Bank':
+                    if not handle_bank_transaction_delete(cursor, transaction_date, amount, transaction_description,
+                                                          bank_branch_name, account_number):
+                        return
+                elif withdraw_place == 'Cash Box':
+                    if not handle_cashbox_transaction_delete(cursor, transaction_date, amount, transaction_description):
+                        return
+
+                # Delete from Expenses table
+                cursor.execute(
+                    "DELETE FROM Expenses WHERE expense_type = %s AND amount = %s AND date_paid = %s AND withdraw_place = %s AND bank_branch_name = %s AND account_number = %s",
+                    (expense_type, amount, date_paid, withdraw_place, bank_branch_name, account_number)
+                )
+
+            connection.commit()
+            messagebox.showinfo("Success", "Information deleted successfully.")
+            clearFields()
+        except pymysql.MySQLError as err:
+            messagebox.showerror("Error", f"Database error: {err}")
+        except ValueError as ve:
+            messagebox.showerror("Input Error", f"Invalid input: {ve}")
+
+    def handle_bank_transaction_delete(cursor, transaction_date, amount, description, bank_branch_name, account_number):
+        # Find the account_id based on bank details
+        cursor.execute(
+            "SELECT account_id, balance FROM BankAccounts WHERE bank_name = %s AND branch_name = %s AND account_number = %s",
+            (selectedBankName.get(), bank_branch_name, account_number)
+        )
+        account = cursor.fetchone()
+        if account:
+            account_id, balance = account
+            # Delete from BankTransactions table
+            cursor.execute(
+                "DELETE FROM BankTransactions WHERE transaction_date = %s AND amount = %s AND description = %s",
+                (transaction_date, amount, description)
+            )
+            # Update BankAccounts balance
+            cursor.execute(
+                "UPDATE BankAccounts SET balance = balance + %s WHERE account_id = %s",
+                (amount, account_id)
+            )
+            return True
+        else:
+            messagebox.showerror("Error", "Bank account not found.")
+            return False
+
+    def handle_cashbox_transaction_delete(cursor, transaction_date, amount, description):
+        # Fetch the current balance from the CashBox table
+        cursor.execute("SELECT balance FROM CashBox")
+        cashbox_balance = cursor.fetchone()
+        if cashbox_balance:
+            # Delete from CashBoxTransactions table
+            cursor.execute(
+                "DELETE FROM CashBoxTransactions WHERE transaction_date = %s AND amount = %s AND description = %s",
+                (transaction_date, amount, description)
+            )
+            # Update CashBox balance
+            cursor.execute(
+                "UPDATE CashBox SET balance = balance + %s",
+                (amount,)
+            )
+            return True
+        else:
+            messagebox.showerror("Error", "Cash Box balance not found.")
+            return False
+
     top = tk.Toplevel()
     top.title('Expenses Page')
 
@@ -265,6 +346,10 @@ def openExpenses():
     # Register button
     registerButton = tk.Button(top, text='Register', command=register_info)
     registerButton.grid(row=5, column=0, padx=10, pady=10, sticky='W')
+
+    # Delete button
+    deleteButton = tk.Button(top, text='Delete', command=delete_info)
+    deleteButton.grid(row=5, column=3, padx=10, pady=10, sticky='W')
 
     # Clear button
     clearButton = tk.Button(top, text='Clear', command=clearFields)
