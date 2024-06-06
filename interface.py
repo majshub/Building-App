@@ -432,10 +432,10 @@ mainLabel.pack(pady=20, padx=20)
 openExpensesButton = tk.Button(root, text='Expenses', command=openExpenses)
 openExpensesButton.pack(pady=20, padx=20)
 
-insuranceButton = tk.Button(root, text='Insurance', command=openInsurance)
+insuranceButton = tk.Button(root, text='Insurances', command=openInsurance)
 insuranceButton.pack(pady=10, padx=20)
 
-contractButton = tk.Button(root, text='Contract', command=openContracts)
+contractButton = tk.Button(root, text='Contracts', command=openContracts)
 contractButton.pack(pady=10, padx=20)
 
 
