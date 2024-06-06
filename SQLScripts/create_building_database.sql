@@ -211,3 +211,24 @@ VALUES
 ('2024-07-02', 75.00, 'Withdrawal for cleaning', 'Withdrawal'),
 ('2024-08-01', 100.00, 'Deposit from unit 108', 'Deposit'),
 ('2024-08-02', 80.00, 'Withdrawal for maintenance', 'Withdrawal');
+
+
+/*
+    WHY TABLES ARE NORMALIZED:
+
+    Units: This table seems appropriately normalized. Each unit has its own unique unit_id, and owner information is stored separately from the unit details.
+
+    Employees: This table also appears to be normalized. Each employee has a unique employee_id, and their personal information is stored separately from the job-related details.
+
+    Receipts: This table could be normalized further. The receipt_type could potentially be moved to a separate table if there are many different types of receipts. However, it depends on the nature of your data and if you expect new types to be added frequently.
+
+    Expenses: Similar to Receipts, the expense_type could be moved to a separate table for normalization. This would allow for easier management if new types of expenses are introduced.
+
+    Contractors and Insurance: Both these tables seem to be normalized as they store separate information about contracts and insurance.
+
+    BankAccounts: This table is normalized, storing information about bank accounts separately from transactions.
+
+    BankTransactions: This table appears to be normalized, linking transactions to bank accounts using the account_id foreign key.
+
+    CashBox and CashBoxTransactions: These tables are normalized, storing separate information about cash box balance and transactions.
+ */
