@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pymysql
+from datetime import datetime, timedelta
 
 # Database connection details
 host = "localhost"  # Your MySQL server hostname
@@ -276,13 +277,84 @@ def openExpenses():
     update_bank_fields_state()
 
 
-mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
-mainLabel.pack(pady=20)
+def openInsurance():
+    insurancePage = tk.Toplevel()
+    insurancePage.title('Insurance Page')
 
-openExpensesButton = tk.Button(root, text='Open Expenses Page', command=openExpenses)
-openExpensesButton.pack(pady=20)
+    # Query to fetch insurances expiring in two months
+    query = f"""
+    SELECT insurance_type, end_date FROM Insurance
+    WHERE end_date <= DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
+    """
+
+    try:
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+
+            # Fetch all results
+            results = cursor.fetchall()
+
+            if results:
+                # Display insurances expiring within two months on the Insurance Page
+                for index, row in enumerate(results, start=1):
+                    insurance_type, end_date = row
+                    tk.Label(insurancePage, text=f"{insurance_type} Insurance is going to expire on {end_date}").pack(padx=20, pady=20)
+            else:
+                messagebox.showinfo("No Insurances", "No Insurances are about to expire")
+    except pymysql.MySQLError as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        # Close the connection
+        connection.close()
+
+def openContracts():
+    contractsPage = tk.Toplevel()
+    contractsPage.title("Contracts Page")
+
+    # Query to fetch insurances expiring in two months
+    query = f"""
+       SELECT company_name, end_date FROM contractors
+       WHERE end_date <= DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
+       """
+
+    try:
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+
+            # Fetch all results
+            results = cursor.fetchall()
+
+            if results:
+                # Display insurances expiring within two months on the Insurance Page
+                for index, row in enumerate(results, start=1):
+                    company_name, end_date = row
+                    tk.Label(contractsPage, text=f"{company_name} contract is going to expire on {end_date}").pack(padx=20, pady=20)
+            else:
+                messagebox.showinfo("No Contracts", "No Contracts are about to expire")
+    except pymysql.MySQLError as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        # Close the connection
+        connection.close()
+
+
+
+mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
+mainLabel.pack(pady=20, padx=20)
+
+openExpensesButton = tk.Button(root, text='Expenses', command=openExpenses)
+openExpensesButton.pack(pady=20, padx=20)
+
+insuranceButton = tk.Button(root, text='Insurance', command=openInsurance)
+insuranceButton.pack(pady=10, padx=20)
+
+contractButton = tk.Button(root, text='Contract', command=openContracts)
+contractButton.pack(pady=10, padx=20)
+
 
 closeButton = tk.Button(root, text='Close', command=root.quit)
-closeButton.pack(pady=20)
+closeButton.pack(pady=20, padx=20)
 
 root.mainloop()
