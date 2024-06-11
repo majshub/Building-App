@@ -370,6 +370,9 @@ def openInsurance():
     insurancePage = tk.Toplevel()
     insurancePage.title('Insurance Page')
 
+    endingInsuranceFrame = tk.LabelFrame(insurancePage, text="Ending Insurance", padx=20, pady=20, font=('Helvetica'))
+    endingInsuranceFrame.grid(row=0, column=0, padx=20, pady=20)
+
     # Query to fetch insurances expiring in two months
     query = f"""
     SELECT insurance_type, end_date FROM Insurance
@@ -388,7 +391,7 @@ def openInsurance():
                 # Display insurances expiring within two months on the Insurance Page
                 for index, row in enumerate(results, start=1):
                     insurance_type, end_date = row
-                    tk.Label(insurancePage, text=f"{insurance_type} Insurance is going to expire on {end_date}").pack(padx=20, pady=20)
+                    tk.Label(endingInsuranceFrame, text=f"{insurance_type} Insurance is going to expire on {end_date}").pack(padx=10, pady=10)
             else:
                 messagebox.showinfo("No Insurances", "No Insurances are about to expire")
     except pymysql.MySQLError as err:
@@ -400,6 +403,10 @@ def openInsurance():
 def openContracts():
     contractsPage = tk.Toplevel()
     contractsPage.title("Contracts Page")
+
+    endingContractsFrame = tk.LabelFrame(contractsPage, text="Ending Contracts", padx=20, pady=20, font=("Helvetica"))
+    endingContractsFrame.grid(row=0, column=0, padx=20, pady=20)
+
 
     # Query to fetch insurances expiring in two months
     query = f"""
@@ -419,7 +426,7 @@ def openContracts():
                 # Display insurances expiring within two months on the Insurance Page
                 for index, row in enumerate(results, start=1):
                     company_name, end_date = row
-                    tk.Label(contractsPage, text=f"{company_name} contract is going to expire on {end_date}").pack(padx=20, pady=20)
+                    tk.Label(endingContractsFrame, text=f"{company_name} contract is going to end on {end_date}").pack(padx=10, pady=10)
             else:
                 messagebox.showinfo("No Contracts", "No Contracts are about to expire")
     except pymysql.MySQLError as err:
@@ -554,25 +561,25 @@ def openReports():
 
 
 
-mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
-mainLabel.pack(pady=20, padx=100)
+mainFrame = tk.LabelFrame(root, text='Building App', font=('Helvetica', 16))
+mainFrame.pack(pady=20, padx=20)
 
-openExpensesButton = tk.Button(root, text='Expenses', command=openExpenses)
+openExpensesButton = tk.Button(mainFrame, text='Expenses', command=openExpenses)
 openExpensesButton.pack(pady=20, padx=100)
 
-insuranceButton = tk.Button(root, text='Insurances', command=openInsurance)
-insuranceButton.pack(pady=10, padx=100)
-
-contractButton = tk.Button(root, text='Contracts', command=openContracts)
-contractButton.pack(pady=10, padx=100)
-
-expenseAnalysisButton = tk.Button(root, text='Expense Analysis', command=openExpenseAnalysis)
+expenseAnalysisButton = tk.Button(mainFrame, text='Expense Analysis', command=openExpenseAnalysis)
 expenseAnalysisButton.pack(pady=10, padx=100)
 
-reportButton = tk.Button(root, text='Reports', command=openReports)
+insuranceButton = tk.Button(mainFrame, text='Insurances', command=openInsurance)
+insuranceButton.pack(pady=10, padx=100)
+
+contractButton = tk.Button(mainFrame, text='Contracts', command=openContracts)
+contractButton.pack(pady=10, padx=100)
+
+reportButton = tk.Button(mainFrame, text='Reports', command=openReports)
 reportButton.pack(padx=20, pady=20)
 
-closeButton = tk.Button(root, text='Close', command=root.quit)
+closeButton = tk.Button(mainFrame, text='Close', command=root.quit)
 closeButton.pack(pady=20, padx=100)
 
 root.mainloop()
