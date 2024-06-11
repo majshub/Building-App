@@ -430,11 +430,13 @@ def openContracts():
 
 
 def openExpenseAnalysis():
+    cursor = connection.cursor()
+
     with connection:
         if not connection:
             return
 
-        cursor = connection.cursor()
+
         query = """
         SELECT DATE_FORMAT(date_paid, '%Y-%m') AS month, SUM(amount) AS total_expense
         FROM Expenses
@@ -467,6 +469,91 @@ def openExpenseAnalysis():
 
 
 
+def openReports():
+    reportsPage = tk.Toplevel()
+    reportsPage.title("Reports Page")
+
+    totalPerMonthFrame = tk.LabelFrame(reportsPage, text='Expenses Per Month', padx=10, pady=10, font=('Helvetica'))
+    totalPerMonthFrame.grid(row=0, column=0, padx=10, pady=10)
+    expensePerMonthQuery = """
+     SELECT SUM(amount) AS total_per_month, date_format(date_paid, '%m') as Month
+     FROM Expenses
+     group BY Month"""
+
+    receivedPerYearFrame = tk.LabelFrame(reportsPage, text='Received Per Year', padx=10, pady=10, font=('Helvetica'))
+    receivedPerYearFrame.grid(row=1, column=0, padx=10, pady=10)
+    receivedPerYearQuery = """
+    SELECT SUM(amount) AS received_per_year, date_format(date_received, '%y') as Year
+    FROM receipts
+    group by Year"""
+
+    cashboxFrame = tk.LabelFrame(reportsPage, text='Cash Box Balance', padx=10, pady=10, font=('Helvetica'))
+    cashboxFrame.grid(row=2, column=0, padx=10, pady=10)
+    cashboxBalanceQuery = """
+    SELECT balance
+    FROM cashbox
+    """
+
+    bankBalanceFrame = tk.LabelFrame(reportsPage, text='Bank Balance', padx=10, pady=10, font=('Helvetica'))
+    bankBalanceFrame.grid(row=3, column=0, padx=10, pady=10)
+    bankBalanceQuery = """
+    SELECT sum(balance) AS total_balance
+    from bankaccounts
+    """
+
+
+    try:
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(expensePerMonthQuery)
+            # Fetch all results
+            expensePerMonthResult = cursor.fetchall()
+
+            if expensePerMonthResult:
+                # Display insurances expiring within two months on the Insurance Page
+                for index, row in enumerate(expensePerMonthResult, start=1):
+                    total_per_month, month = row
+                    tk.Label(totalPerMonthFrame, text=f"${total_per_month} spent on month {month}").pack(padx=20, pady=1)
+            else:
+                messagebox.showinfo("Failed", "Process failed")
+
+            cursor.execute(receivedPerYearQuery)
+            receivedPerYearResult = cursor.fetchall()
+
+            if receivedPerYearResult:
+                for index, row in enumerate(receivedPerYearResult, start=1):
+                    total_per_year, year = row
+                    tk.Label(receivedPerYearFrame, text=f"${total_per_year} received in year {year}").pack(padx=20, pady=1)
+            else:
+                messagebox.showinfo("Failed", "Process failed")
+
+            cursor.execute(cashboxBalanceQuery)
+            cashboxBalanceResult = cursor.fetchall()
+
+            if cashboxBalanceResult:
+                for index, row in enumerate(cashboxBalanceResult):
+                    total = row[0]
+                    tk.Label(cashboxFrame, text=f"${total}").pack(padx=20, pady=1)
+            else:
+                messagebox.showinfo("Failed", "Process failed")
+
+            cursor.execute(bankBalanceQuery)
+            bankBalanceResult = cursor.fetchall()
+            if bankBalanceResult:
+                for index, row in enumerate(bankBalanceResult):
+                    total = row[0]
+                    tk.Label(bankBalanceFrame, text=f"${total}").pack(padx=20, pady=1)
+            else:
+                messagebox.showerror("Failed", "Process failed")
+
+    except pymysql.MySQLError as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        # Close the connection
+        connection.close()
+
+
+
 mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
 mainLabel.pack(pady=20, padx=100)
 
@@ -481,6 +568,9 @@ contractButton.pack(pady=10, padx=100)
 
 expenseAnalysisButton = tk.Button(root, text='Expense Analysis', command=openExpenseAnalysis)
 expenseAnalysisButton.pack(pady=10, padx=100)
+
+reportButton = tk.Button(root, text='Reports', command=openReports)
+reportButton.pack(padx=20, pady=20)
 
 closeButton = tk.Button(root, text='Close', command=root.quit)
 closeButton.pack(pady=20, padx=100)
