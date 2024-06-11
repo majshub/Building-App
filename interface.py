@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pymysql
-from datetime import datetime, timedelta
+from contextlib import contextmanager
+from datetime import datetime
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pandas as pd
 
 # Database connection details
 host = "localhost"  # Your MySQL server hostname
@@ -425,6 +429,43 @@ def openContracts():
         connection.close()
 
 
+def openExpenseAnalysis():
+    with connection:
+        if not connection:
+            return
+
+        cursor = connection.cursor()
+        query = """
+        SELECT DATE_FORMAT(date_paid, '%Y-%m') AS month, SUM(amount) AS total_expense
+        FROM Expenses
+        GROUP BY month
+        ORDER BY month
+        """
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+        df = pd.DataFrame(result, columns=['Month', 'Total_Expense'])
+        df['Month'] = pd.to_datetime(df['Month'])
+
+        fig, ax = plt.subplots()
+        ax.plot(df['Month'], df['Total_Expense'], marker='o', linestyle='-')
+
+        ax.set_title('Monthly Expenses')
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Expenses ($)')
+        ax.grid(True)
+
+        analysis_window = tk.Toplevel(root)
+        analysis_window.title('Expense Analysis')
+
+        espenseAnalysisLable = tk.Label(analysis_window, text='Expense Analysis', font=('Helvetica', 16))
+        espenseAnalysisLable.pack(pady=50)
+
+        canvas = FigureCanvasTkAgg(fig, master=analysis_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+
 
 mainLabel = tk.Label(root, text='Building App', font=('Helvetica', 16))
 mainLabel.pack(pady=20, padx=100)
@@ -438,6 +479,8 @@ insuranceButton.pack(pady=10, padx=100)
 contractButton = tk.Button(root, text='Contracts', command=openContracts)
 contractButton.pack(pady=10, padx=100)
 
+expenseAnalysisButton = tk.Button(root, text='Expense Analysis', command=openExpenseAnalysis)
+expenseAnalysisButton.pack(pady=10, padx=100)
 
 closeButton = tk.Button(root, text='Close', command=root.quit)
 closeButton.pack(pady=20, padx=100)
