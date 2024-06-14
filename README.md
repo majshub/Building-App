@@ -20,8 +20,8 @@ This is a Building Management Application developed using Python and Tkinter for
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/BuildingManagementApp.git
-    cd BuildingManagementApp
+    git clone https://github.com/majshub/Building-App
+    cd Building-App
     ```
 
 2. **Install Python Packages**:
@@ -36,7 +36,7 @@ This is a Building Management Application developed using Python and Tkinter for
       ```sql
       CREATE DATABASE sql_building;
       ```
-    - Create the necessary tables by running the following SQL commands:
+    - Create the necessary tables by running the following SQL commands(or use the sql file in SQLScripts):
       ```sql
       CREATE TABLE BankAccounts (
           account_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,7 +100,7 @@ This is a Building Management Application developed using Python and Tkinter for
 
 1. **Start the Application**:
     ```bash
-    python app.py
+    python interface.py
     ```
 
 2. **Main Menu**:
