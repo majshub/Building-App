@@ -40,6 +40,7 @@ root.title('Building App')
 
 
 def openExpenses():
+    connection = connect_db()
     def clearFields():
         # Clearing expense type
         selectedExpenseType.set(ExpenseTypes[0])
@@ -367,6 +368,7 @@ def openExpenses():
 
 
 def openInsurance():
+    connection = connect_db()
     insurancePage = tk.Toplevel()
     insurancePage.title('Insurance Page')
 
@@ -401,6 +403,7 @@ def openInsurance():
         connection.close()
 
 def openContracts():
+    connection = connect_db()
     contractsPage = tk.Toplevel()
     contractsPage.title("Contracts Page")
 
@@ -437,6 +440,7 @@ def openContracts():
 
 
 def openExpenseAnalysis():
+    connection =connect_db()
     cursor = connection.cursor()
 
     with connection:
@@ -477,6 +481,7 @@ def openExpenseAnalysis():
 
 
 def openReports():
+    connection = connect_db()
     reportsPage = tk.Toplevel()
     reportsPage.title("Reports Page")
 
