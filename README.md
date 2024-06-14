@@ -123,10 +123,6 @@ This is a Building Management Application developed using Python and Tkinter for
 - Ensure your MySQL server is running before starting the application.
 - Modify the `host`, `user`, `password`, and `database` variables in the script to match your MySQL configuration.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
